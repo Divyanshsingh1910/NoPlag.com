@@ -1,0 +1,166 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: #fff;
+    color: #333;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+header {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.website-url {
+    text-align: left;
+    margin-bottom: 20px;
+    color: #1a73e8;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin: 30px 0;
+    color: #333;
+    font-weight: normal;
+}
+
+.description {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 50px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.input-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px 0;
+    position: relative;
+}
+
+.dashed-line {
+    flex-grow: 1;
+    border-top: 2px dashed #ccc;
+    margin: 0 10px;
+}
+
+.input-container {
+    position: relative;
+    width: 240px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 12px 40px 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.paperclip-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    cursor: pointer;
+}
+
+.submit-btn {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+    background-color: #1557b0;
+}
+
+footer {
+    text-align: center;
+    margin-top: auto;
+    padding: 20px 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* File upload styling */
+input[type="file"] {
+    display: none;
+}
+
+/* Progress bar styling */
+.progress-container {
+    margin: 30px 0;
+    text-align: center;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    margin: 15px 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #1a73e8;
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.progress-status {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 10px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .input-section {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .dashed-line {
+        width: 80%;
+        margin: 10px 0;
+    }
+    
+    .input-container {
+        width: 90%;
+    }
+}

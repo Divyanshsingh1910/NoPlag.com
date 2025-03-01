@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoPlag.com - Don't Get Caught</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="website-url">https://noplag.com</div>
+        
+        <header>
+            <h1>Don't Get Caught</h1>
+            <p class="description">NoPlag.com lets you create personal versions of your friend's solution for any assignment or projects without any fear of plagiarism.</p>
+        </header>
+        
+        <form id="noplag-form" enctype="multipart/form-data">
+            <div class="input-section">
+                <div class="input-container">
+                    <input type="text" class="input-field" placeholder="question here" id="question-input">
+                    <label for="question-file" class="paperclip-icon">📎</label>
+                    <input type="file" id="question-file" accept=".txt,.pdf,.jpg,.jpeg,.png">
+                </div>
+                
+                <div class="dashed-line"></div>
+                
+                <div class="input-container">
+                    <input type="text" class="input-field" placeholder="original solution" id="solution-input">
+                    <label for="solution-file" class="paperclip-icon">📎</label>
+                    <input type="file" id="solution-file" accept=".txt,.pdf,.tex,.py,.cpp,.c,.java,.js">
+                </div>
+                
+                <div class="dashed-line"></div>
+                
+                <button type="submit" class="submit-btn">Submit</button>
+            </div>
+        </form>
+        
+        <!-- Progress bar (hidden by default) -->
+        <div id="progress-container" class="progress-container" style="display: none;">
+            <h3>Generating your personalized solution...</h3>
+            <div class="progress-bar-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div id="progress-status" class="progress-status">Step 1/4: Processing input files...</div>
+        </div>
+        
+        <footer>
+            Do assignments and projects submissions 5 minute before deadline effortlessly<br>
+            made by Divyanshsingh1910
+        </footer>
+    </div>
+
+    <script src="static/script.js"></script>
+</body>
+</html>
