@@ -3,3 +3,4 @@ uploads/
 __pycache__
 .env
 test.ipynb
+combined_output.txt

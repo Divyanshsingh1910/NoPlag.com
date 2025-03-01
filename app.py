@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, Response
 import os
 import uuid
 import zipfile
@@ -18,6 +18,8 @@ from prompts import (
     get_solution_rewrite_prompt
 )
 from flask_cors import CORS  # Add this import
+import threading
+import time
 
 app = Flask(__name__, static_folder='static')
 CORS(app)  # Enable CORS for all routes
@@ -50,6 +52,13 @@ def ask_lm(prompt):
     )
     return response.choices[0].message.content
 
+# Add this global dictionary to store progress
+progress_status = {}
+
+@app.route('/api/progress/<session_id>', methods=['GET'])
+def get_progress(session_id):
+    return jsonify(progress_status.get(session_id, {'percent': 0, 'message': 'Starting...'}))
+
 @app.route('/')
 def index():
     return app.send_static_file('index.html')
@@ -57,11 +66,18 @@ def index():
 @app.route('/api/generate', methods=['POST'])
 def generate_solution():
     try:
-        # Create a unique session ID for this request
         session_id = str(uuid.uuid4())
+        progress_status[session_id] = {'percent': 0, 'message': 'Starting...'}
+        
         session_dir = os.path.join(app.config['TEMP_FOLDER'], session_id)
         os.makedirs(session_dir, exist_ok=True)
         
+        # Update progress after processing inputs
+        progress_status[session_id] = {
+            'percent': 25,
+            'message': 'Processing the question and solution...'
+        }
+
         # Extract question
         question_text = request.form.get('question_text', '')
         question_content = question_text
@@ -110,14 +126,28 @@ def generate_solution():
                 if extracted_solution:
                     solution_content = extracted_solution
         
+        
         # Process solution
         processed_solution = process_solution(solution_content, solution_format)
+
+        # Update progress before analysis
+        progress_status[session_id] = {
+            'percent': 50,
+            'message': 'Analyzing the solution...'
+        }
+        print("Progress: Question and solution processed")
         
         # Step 1: Generate detailed solution idea
         solution_analysis_prompt = get_solution_analysis_prompt(processed_question, processed_solution)
         
         solution_idea_detailed = ask_lm(solution_analysis_prompt)
 
+
+        # Update progress before rewriting
+        progress_status[session_id] = {
+            'percent': 75,
+            'message': 'Creating new solution...'
+        }
         print("Progress: Detailed solution idea generated")
         
         # Step 2: Generate new solution based on the detailed idea
@@ -125,6 +155,12 @@ def generate_solution():
         
         rewritten_solution = ask_lm(rewrite_prompt)
 
+
+        # Final progress update
+        progress_status[session_id] = {
+            'percent': 100,
+            'message': 'Almost done! saving the file!'
+        }
         print("Progress: Rewritten solution generated")
         
         # Save the rewritten solution to a file
@@ -134,26 +170,36 @@ def generate_solution():
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(rewritten_solution)
 
+
         print("Progress: Solution saved to file")
         
         # Create a zip file if needed for multiple files or just send the single file
         if os.path.exists(output_path):
-            # Return the file for download
-            return send_file(output_path, as_attachment=True, download_name=output_filename)
+            response = send_file(output_path, as_attachment=True, download_name=output_filename)
+            response.headers['X-Session-ID'] = session_id
+            return response
         else:
-            return jsonify({'error': 'Failed to generate solution'}), 500
+            response = jsonify({'error': 'Failed to generate solution'})
+            response.headers['X-Session-ID'] = session_id
+            return response, 500
         
     except Exception as e:
-        print("Error:", str(e))
-        print(traceback.format_exc())
-        return jsonify({'error': str(e)}), 500
+        progress_status[session_id] = {
+            'percent': 0,
+            'message': f'Error: {str(e)}'
+        }
+        response = jsonify({'error': str(e)})
+        response.headers['X-Session-ID'] = session_id
+        return response, 500
     finally:
-        # Clean up temporary files
-        try:
+        # Clean up temporary files after 5 minutes
+        def cleanup():
+            time.sleep(300)  # 5 minutes
+            progress_status.pop(session_id, None)
             if 'session_dir' in locals() and os.path.exists(session_dir):
                 shutil.rmtree(session_dir)
-        except Exception as cleanup_error:
-            print("Cleanup error:", str(cleanup_error))
+        
+        threading.Thread(target=cleanup).start()
 
 if __name__ == '__main__':
     app.run(debug=True)
